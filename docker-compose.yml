@@ -1,0 +1,15 @@
+services:
+  app:
+    build: .
+    volumes:
+      - ./:/code
+    working_dir: /code
+    command: python3 main.py
+    ports:
+      - 5000:5000
+  jenkins:
+    image: jenkins/jenkins:lts
+    volumes:
+      - ./volume:/var/jenkins_home
+    ports:
+      - "8080:8080"
