@@ -9,7 +9,7 @@ pipeline {
                         [$class: 'ChoiceParameter', 
                             choiceType: 'PT_MULTI_SELECT', 
                             description: 'Select the Env Name from the Dropdown List', 
-                            name: 'Env', 
+                            name: 'Env',
                             randomName: 'choice-parameter-5631314439613978', 
                             script: [
                                 $class: 'GroovyScript', 
@@ -45,13 +45,30 @@ pipeline {
                                     classpath: [], 
                                     sandbox: true, 
                                     script: 
-                                        ''' if ( Env == "dev") {
-                                            def value1 = "http://app:5000/data?DevREPO".toURL().text
-                                            return [value1]
-                                            } else if ( Env == "test") {
-                                            def value2 = "http://app:5000/data?TestREPO".toURL().text
-                                            return [value2]
+                                        ''' 
+                                            import groovy.json.JsonSlurper
+                                            import jenkins.model.* 
+                                            import hudson.model.*
+
+                                            def get_versions_from_api(urlvar){
+                                                def responsevar = urlvar.toURL().text
+                                                def parser = new JsonSlurper()
+                                                def Object jsonResp = parser.parseText(responsevar.toString())
+                                                def versions_list = []
+                                                jsonResp["items"].each { getversion ->
+                                                def str = getversion["name"].split('/')
+                                                versions_list.add(str[3])
+                                                }
+                                                return versions_list.sort().reverse()
                                             }
+
+                                            try {
+                                            if ( Env == "dev"){
+                                                return get_versions_from_api("http://app:5000/dev")
+                                            } else if ( Env == "test") {
+                                                return get_versions_from_api("http://app:5000/test")
+                                            }
+                                            }catch(e){ return [e.toString()] }
                                         '''
                                     ]
                                 ]
@@ -65,12 +82,9 @@ pipeline {
         stage('Print Param'){
             steps{
                 script{
-                    print 'DEBUG: parameter Repo = ' + params.Repo
+                    println(params.Repo)
                 }
             }
         }
     }   
 }
-
-
-
