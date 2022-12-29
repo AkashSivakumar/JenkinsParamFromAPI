@@ -49,6 +49,8 @@ pipeline {
                                             import groovy.json.JsonSlurper
                                             import jenkins.model.* 
                                             import hudson.model.*
+                                            
+                                            def jenkinsYAML = readYaml file: "${env.WORKSPACE}/{Env}/jenkins.yaml"
 
                                             def get_versions_from_api(urlvar){
                                                 def responsevar = urlvar.toURL().text
@@ -64,7 +66,8 @@ pipeline {
 
                                             try {
                                             if ( Env == "dev"){
-                                                return get_versions_from_api("http://app:5000/dev")
+                                                env.APP_NAME = jenkinsYAML.APP_NAME
+                                                return get_versions_from_api("http://app:5000/${env.APP_NAME}")
                                             } else if ( Env == "test") {
                                                 return get_versions_from_api("http://app:5000/test")
                                             }
