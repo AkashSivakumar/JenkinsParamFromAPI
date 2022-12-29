@@ -77,6 +77,11 @@ pipeline {
                                         import jenkins.model.* 
                                         import hudson.model.*
                                         import hudson.EnvVars
+                                        import org.yaml.snakeyaml.Yaml
+
+                                        Yaml parser = new Yaml()
+                                        
+
                                         def homeDir = EnvVars.masterEnvVars['HOME']
 
 
@@ -95,12 +100,12 @@ pipeline {
 
                                         try {
                                         if ( EnvParam == "dev"){
-                                            def jenkinsYAML = readYaml file: homeDir + "/workspace/" + JobNameParam + "/dev/jenkins.yaml"
-                                            env.APP_NAME = jenkinsYAML.APP_NAME
+                                            def jenkinsYAML = parser.load(("/var/jenkins_home/workspace/final2/dev/jenkins.yaml" as File).text)
+                                            env.APP_NAME = jenkinsYAML['APP_NAME']
                                             return get_versions_from_api("http://app:5000/${env.APP_NAME}")
                                         } else if ( EnvParam == "test") {
-                                            def jenkinsYAML = readYAML file: "/var/jenkins_home/workspace/final2/test/jenkins.yaml"
-                                            env.APP_NAME = jenkinsYAML.APP_NAME
+                                            def jenkinsYAML = parser.load(("/var/jenkins_home/workspace/final2/test/jenkins.yaml" as File).text)
+                                            env.APP_NAME = jenkinsYAML['APP_NAME']
                                             return get_versions_from_api("http://app:5000/${env.APP_NAME}")
                                         }
                                         }catch(e){ return [e.toString()] }
