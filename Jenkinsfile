@@ -57,7 +57,7 @@ pipeline {
                                             EnvVars env = prop.getEnvVars()
 
                                             def jenkinsYAML = readYaml file: "${env['WORKSPACE']}/{Env}/jenkins.yaml"
-                                            }catch(e){ return [e.toString()] 
+                                            
                                            
 
                                             def get_versions_from_api(urlvar){
@@ -72,7 +72,6 @@ pipeline {
                                                 return versions_list.sort().reverse()
                                             }
 
-                                            try {
                                             if ( Env == "dev"){
                                                 env.APP_NAME = jenkinsYAML.APP_NAME
                                                 return get_versions_from_api("http://app:5000/${env.APP_NAME}")
