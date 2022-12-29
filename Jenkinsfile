@@ -49,8 +49,10 @@ pipeline {
                                             import groovy.json.JsonSlurper
                                             import jenkins.model.* 
                                             import hudson.model.*
-                                            
+                                            try {
                                             def jenkinsYAML = readYaml file: "${env.WORKSPACE}/{Env}/jenkins.yaml"
+                                            }catch(e){ return [e.toString()] }
+                                           
 
                                             def get_versions_from_api(urlvar){
                                                 def responsevar = urlvar.toURL().text
