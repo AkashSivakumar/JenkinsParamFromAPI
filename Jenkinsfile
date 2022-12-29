@@ -15,13 +15,13 @@ pipeline {
                                 $class: 'GroovyScript', 
                                 fallbackScript: [
                                     classpath: [], 
-                                    sandbox: true, 
+                                    sandbox: false, 
                                     script: 
                                         'return[\'Could not get Env\']'
                                 ], 
                                 script: [
                                     classpath: [], 
-                                    sandbox: true, 
+                                    sandbox: false, 
                                     script: 
                                         'return["dev","test"]'
                                 ]
@@ -36,13 +36,13 @@ pipeline {
                                 $class: 'GroovyScript', 
                                 fallbackScript: [
                                     classpath: [], 
-                                    sandbox: true, 
+                                    sandbox: false, 
                                     script: 
                                         'return[\'Could not get Env\']'
                                 ], 
                                 script: [
                                     classpath: [], 
-                                    sandbox: true, 
+                                    sandbox: false, 
                                     script:
                                         '''
                                             def build = Thread.currentThread().toString()
@@ -64,13 +64,13 @@ pipeline {
                                 $class: 'GroovyScript', 
                                 fallbackScript: [
                                     classpath: [], 
-                                    sandbox: true, 
+                                    sandbox: false, 
                                     script: 
                                         'return[\'Could not get Environment from Env Param\']'
                                 ], 
                                 script: [
                                     classpath: [], 
-                                    sandbox: true, 
+                                    sandbox: false, 
                                     script: 
                                         ''' 
                                         import groovy.json.JsonSlurper
