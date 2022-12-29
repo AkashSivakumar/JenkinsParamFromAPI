@@ -49,9 +49,14 @@ pipeline {
                                             import groovy.json.JsonSlurper
                                             import jenkins.model.* 
                                             import hudson.model.*
+                                            import hudson.slaves.EnvironmentVariablesNodeProperty
+                                            import hudson.EnvVars
                                             jenkins = Jenkins.instance
+                                            EnvironmentVariablesNodeProperty prop = jenkins.getGlobalNodeProperties().get(EnvironmentVariablesNodeProperty.class)
+                                            EnvVars env = prop.getEnvVars()
+
                                             try {
-                                            def jenkinsYAML = readYaml file: "${env.WORKSPACE}/{Env}/jenkins.yaml"
+                                            def jenkinsYAML = readYaml file: "${env['WORKSPACE']}/{Env}/jenkins.yaml"
                                             }catch(e){ return [e.toString()] }
                                            
 
