@@ -99,7 +99,7 @@ pipeline {
                                             env.APP_NAME = jenkinsYAML.APP_NAME
                                             return get_versions_from_api("http://app:5000/${env.APP_NAME}")
                                         } else if ( EnvParam == "test") {
-                                            def jenkinsYAML = readYaml file: "/var/jenkins_home/workspace/final2/test/jenkins.yaml"
+                                            def jenkinsYAML = readYAML file: "/var/jenkins_home/workspace/final2/test/jenkins.yaml"
                                             env.APP_NAME = jenkinsYAML.APP_NAME
                                             return get_versions_from_api("http://app:5000/${env.APP_NAME}")
                                         }
