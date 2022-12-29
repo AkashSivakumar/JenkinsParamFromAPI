@@ -77,7 +77,9 @@ pipeline {
                                         import jenkins.model.* 
                                         import hudson.model.*
                                         import hudson.EnvVars
-
+                                        import groovy.yaml.YamlSlurper
+                                        
+                                        List example = new YamlSlurper().parse("example.yaml" as File)
                                         def homeDir = EnvVars.masterEnvVars['HOME']
 
 
@@ -100,7 +102,7 @@ pipeline {
                                             env.APP_NAME = jenkinsYAML.APP_NAME
                                             return get_versions_from_api("http://app:5000/${env.APP_NAME}")
                                         } else if ( EnvParam == "test") {
-                                            def jenkinsYAML = readYaml file: homeDir + "/workspace/" + JobNameParam + "/test/jenkins.yaml"
+                                            def jenkinsYAML = readYaml file: "/var/jenkins_home/workspace/final2/test/jenkins.yaml"
                                             env.APP_NAME = jenkinsYAML.APP_NAME
                                             return get_versions_from_api("http://app:5000/${env.APP_NAME}")
                                         }
