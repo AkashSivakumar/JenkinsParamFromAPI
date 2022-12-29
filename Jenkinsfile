@@ -9,7 +9,7 @@ pipeline {
                         [$class: 'ChoiceParameter', 
                             choiceType: 'PT_MULTI_SELECT', 
                             description: 'Select the Env Name from the Dropdown List', 
-                            name: 'Env',
+                            name: 'EnvParam',
                             randomName: 'choice-parameter-5631314439613978', 
                             script: [
                                 $class: 'GroovyScript', 
@@ -27,12 +27,39 @@ pipeline {
                                 ]
                             ]
                         ], 
+                        [$class: 'ChoiceParameter', 
+                            choiceType: 'PT_SINGLE_SELECT', 
+                            description: 'Select the Env Name from the Dropdown List', 
+                            name: 'JobNameParam',
+                            randomName: 'choice-parameter-5631314439613978', 
+                            script: [
+                                $class: 'GroovyScript', 
+                                fallbackScript: [
+                                    classpath: [], 
+                                    sandbox: true, 
+                                    script: 
+                                        'return[\'Could not get Env\']'
+                                ], 
+                                script: [
+                                    classpath: [], 
+                                    sandbox: true, 
+                                    script:
+                                        '''
+                                            def build = Thread.currentThread().toString()
+                                            def regexp= ".+?/job/([^/]+)/.*"
+                                            def match = build  =~ regexp
+                                            def jobName = match[0][1]
+                                            return [jobName]
+                                        '''
+                                ]
+                            ]
+                        ], 
                         [$class: 'CascadeChoiceParameter', 
                             choiceType: 'PT_MULTI_SELECT', 
                             description: 'Select the repo from the Dropdown List', 
                             name: 'Repo', 
                             randomName: 'choice-parameter-5631314456178619', 
-                            referencedParameters: 'Env', 
+                            referencedParameters: 'EnvParam,JobNameParam',
                             script: [
                                 $class: 'GroovyScript', 
                                 fallbackScript: [
@@ -46,41 +73,38 @@ pipeline {
                                     sandbox: true, 
                                     script: 
                                         ''' 
-                                            import groovy.json.JsonSlurper
-                                            import jenkins.model.* 
-                                            import hudson.model.*
-                                            import hudson.slaves.EnvironmentVariablesNodeProperty
-                                            import hudson.EnvVars
+                                        import groovy.json.JsonSlurper
+                                        import jenkins.model.* 
+                                        import hudson.model.*
+                                        import hudson.EnvVars
 
-                                            def get_versions_from_api(urlvar){
-                                                def responsevar = urlvar.toURL().text
-                                                def parser = new JsonSlurper()
-                                                def Object jsonResp = parser.parseText(responsevar.toString())
-                                                def versions_list = []
-                                                jsonResp["items"].each { getversion ->
-                                                def str = getversion["name"].split('/')
-                                                versions_list.add(str[3])
-                                                }
-                                                return versions_list.sort().reverse()
+                                        def homeDir = EnvVars.masterEnvVars['HOME']
+
+
+
+                                        def get_versions_from_api(urlvar){
+                                            def responsevar = urlvar.toURL().text
+                                            def parser = new JsonSlurper()
+                                            def Object jsonResp = parser.parseText(responsevar.toString())
+                                            def versions_list = []
+                                            jsonResp["items"].each { getversion ->
+                                            def str = getversion["name"].split('/')
+                                            versions_list.add(str[3])
                                             }
+                                            return versions_list.sort().reverse()
+                                        }
 
-                                            try {
-                                            jenkins = Jenkins.instance
-                                            EnvironmentVariablesNodeProperty prop = jenkins.getGlobalNodeProperties().get(EnvironmentVariablesNodeProperty.class)
-                                            EnvVars env = prop.getEnvVars()
-
-                                            def jenkinsYAML = readYaml file: "${env['WORKSPACE']}/{Env}/jenkins.yaml"
-                                            
-                                           
-
-
-                                            if ( Env == "dev"){
-                                                env.APP_NAME = jenkinsYAML.APP_NAME
-                                                return get_versions_from_api("http://app:5000/${env.APP_NAME}")
-                                            } else if ( Env == "test") {
-                                                return get_versions_from_api("http://app:5000/test")
-                                            }
-                                            }catch(e){ return [e.toString()] }
+                                        try {
+                                        if ( EnvParam == "dev"){
+                                            def jenkinsYAML = readYaml file: homeDir + "/workspace/" + JobNameParam + "/dev/jenkins.yaml"
+                                            env.APP_NAME = jenkinsYAML.APP_NAME
+                                            return get_versions_from_api("http://app:5000/${env.APP_NAME}")
+                                        } else if ( EnvParam == "test") {
+                                            def jenkinsYAML = readYaml file: homeDir + "/workspace/" + JobNameParam + "/test/jenkins.yaml"
+                                            env.APP_NAME = jenkinsYAML.APP_NAME
+                                            return get_versions_from_api("http://app:5000/${env.APP_NAME}")
+                                        }
+                                        }catch(e){ return [e.toString()] }
                                         '''
                                     ]
                                 ]
@@ -94,7 +118,7 @@ pipeline {
         stage('Print Param'){
             steps{
                 script{
-                    println(params.Repo)
+                    println(params.JobNameParam)
                 }
             }
         }
