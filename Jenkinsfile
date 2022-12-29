@@ -77,9 +77,6 @@ pipeline {
                                         import jenkins.model.* 
                                         import hudson.model.*
                                         import hudson.EnvVars
-                                        import groovy.yaml.YamlSlurper
-                                        
-                                        List example = new YamlSlurper().parse("example.yaml" as File)
                                         def homeDir = EnvVars.masterEnvVars['HOME']
 
 
