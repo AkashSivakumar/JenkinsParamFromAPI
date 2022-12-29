@@ -100,11 +100,11 @@ pipeline {
 
                                         try {
                                         if ( EnvParam == "dev"){
-                                            def jenkinsYAML = parser.load(("/var/jenkins_home/workspace/final2/dev/jenkins.yaml" as File).text)
+                                            def jenkinsYAML = parser.load((homeDir + "/workspace/" + JobNameParam + "/dev/jenkins.yaml" as File).text)
                                             def APP_NAME = jenkinsYAML['APP_NAME']
                                             return get_versions_from_api("http://app:5000/" + APP_NAME)
                                         } else if ( EnvParam == "test") {
-                                            def jenkinsYAML = parser.load(("/var/jenkins_home/workspace/final2/test/jenkins.yaml" as File).text)
+                                            def jenkinsYAML = parser.load((homeDir + "/workspace/" + JobNameParam + "/test/jenkins.yaml" as File).text)
                                             def APP_NAME = jenkinsYAML['APP_NAME']
                                             return get_versions_from_api("http://app:5000/" + APP_NAME)
                                         }
