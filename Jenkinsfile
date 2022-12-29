@@ -46,19 +46,11 @@ pipeline {
                                     sandbox: true, 
                                     script: 
                                         ''' 
-                                            try {
                                             import groovy.json.JsonSlurper
                                             import jenkins.model.* 
                                             import hudson.model.*
                                             import hudson.slaves.EnvironmentVariablesNodeProperty
                                             import hudson.EnvVars
-                                            jenkins = Jenkins.instance
-                                            EnvironmentVariablesNodeProperty prop = jenkins.getGlobalNodeProperties().get(EnvironmentVariablesNodeProperty.class)
-                                            EnvVars env = prop.getEnvVars()
-
-                                            def jenkinsYAML = readYaml file: "${env['WORKSPACE']}/{Env}/jenkins.yaml"
-                                            
-                                           
 
                                             def get_versions_from_api(urlvar){
                                                 def responsevar = urlvar.toURL().text
@@ -71,6 +63,16 @@ pipeline {
                                                 }
                                                 return versions_list.sort().reverse()
                                             }
+
+                                            try {
+                                            jenkins = Jenkins.instance
+                                            EnvironmentVariablesNodeProperty prop = jenkins.getGlobalNodeProperties().get(EnvironmentVariablesNodeProperty.class)
+                                            EnvVars env = prop.getEnvVars()
+
+                                            def jenkinsYAML = readYaml file: "${env['WORKSPACE']}/{Env}/jenkins.yaml"
+                                            
+                                           
+
 
                                             if ( Env == "dev"){
                                                 env.APP_NAME = jenkinsYAML.APP_NAME
